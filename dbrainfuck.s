@@ -1,18 +1,27 @@
-.global brainfuck
+.global main
 
 format_str: .asciz "%c"
+error: .asciz "Unrecognized character found"
+format_decimal: .asciz "%d \n"
 msg1: .asciz "\nFinished \n"
+code: .asciz ">>[-]<<[->>+<<]"
 # Your brainfuck subroutine will receive one argument:
 # a zero termianted string containing the code to execute.
+code2: .asciz "++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>++.>+.+++++++..+++.<<++.>+++++++++++++++.>.+++.------.--------.<<+.<."
+main:
+
+	call brainfuck
+
+	call exit
 
 brainfuck:
 
-	//movq $code, %rdi
+	movq $code, %rdi
 	push %rbp
 	movq %rsp, %rbp
 
 	movq %rdi, %rsi
-	subq $8, %rbp
+	subq $40000, %rbp
 
 	movq $10000, %rax
 	fillStack:
@@ -60,10 +69,12 @@ brainfuck:
 
 	// pushq %rsi
 
-	// movq %rax, %rsi
-	// movq $0, %rax
-	// movq $format_str, %rdi
-	// call printf
+	movq %rax, %rsi
+	movq $0, %rax
+	movq $error, %rdi
+	call printf
+
+	call exit
 	
 
 	// popq %rsi
@@ -87,11 +98,23 @@ brainfuck:
 	jmp charLoop
 
 	startLoop:
+	cmp $0, (%rbp)
+	jne skipLoop
 	push %rsi
 	push %rbp
+	skipLoop:
 	jmp charLoop
 
 	endLoop:
+
+	movq %rsi, %r15
+	movq (%rbp), %rsi
+	movq $0, %rax
+	movq $format_decimal, %rdi
+	call printf
+	
+	movq %r15, %rsi
+
 	cmp $0, (%rbp)
 	jne completeLoopExecution
 	pop %r15

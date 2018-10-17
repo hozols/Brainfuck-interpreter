@@ -1,6 +1,7 @@
 .global brainfuck
 
-format_str: .asciz "%c \n"
+format_str: .asciz "%c"
+msg1: .asciz "\nFinished \n"
 # Your brainfuck subroutine will receive one argument:
 # a zero termianted string containing the code to execute.
 brainfuck:
@@ -92,16 +93,20 @@ brainfuck:
 
 	finish:
 
-	// popq %rax
-	// popq %rax
-	// popq %rax
-	// popq %rax
-	// popq %rax
-	// popq %rax
-	// popq %rax
-	// popq %rax
-	// popq %rax
+	movq $0, %rax
+	movq $msg1, %rdi
+	call printf
 
-	movq %rbp, %rsp
+	popq %rax
+	popq %rax
+	popq %rax
+	popq %rax
+	popq %rax
+	popq %rax
+	popq %rax
+	popq %rax
+	popq %rax
+
+	//movq %rbp, %rsp
 	popq %rbp
 	ret

@@ -7,12 +7,12 @@ msg1: .asciz "\nFinished \n"
 
 brainfuck:
 
-	//movq $code, %rdi
 	push %rbp
 	movq %rsp, %rbp
 
 	movq %rdi, %rsi
-	subq $8, %rbp
+	subq $40000, %rbp
+	movq $0, %r14
 
 	movq $10000, %rax
 	fillStack:
@@ -25,6 +25,9 @@ brainfuck:
 	charLoop:
 
 	lodsb 
+
+	cmpq $0, %r14
+	jg skipProcess
 
 	cmpq $0, %rax
 	je finish
@@ -57,17 +60,26 @@ brainfuck:
 	cmpq $93, %rax
 	je endLoop
 
+	skipProcess:
 
-	// pushq %rsi
+	// Opening lopp char
+	cmpq $91, %rax
+	je startLoopSkip
 
-	// movq %rax, %rsi
-	// movq $0, %rax
-	// movq $format_str, %rdi
-	// call printf
-	
+	// Opening lopp char
+	cmpq $93, %rax
+	je endLoopSkip
 
-	// popq %rsi
 
+
+	jmp charLoop
+
+	startLoopSkip:
+	addq $1, %r14
+	jmp charLoop
+
+	endLoopSkip:
+	subq $1, %r14
 	jmp charLoop
 
 	shiftRight: 
@@ -87,11 +99,17 @@ brainfuck:
 	jmp charLoop
 
 	startLoop:
+	cmp $0, (%rbp)
+	je skipLoop
 	push %rsi
 	push %rbp
 	jmp charLoop
+	skipLoop:
+	movq $1, %r14
+	jmp charLoop
 
 	endLoop:
+
 	cmp $0, (%rbp)
 	jne completeLoopExecution
 	pop %r15

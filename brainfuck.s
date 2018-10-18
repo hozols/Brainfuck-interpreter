@@ -9,6 +9,7 @@ brainfuck:
 
 	push %rbp
 	movq %rsp, %rbp
+	movq %rbp, %r13
 
 	movq %rdi, %rsi
 	subq $40000, %rbp
@@ -24,7 +25,7 @@ brainfuck:
 
 	charLoop:
 
-	lodsb 
+	lodsb
 
 	cmpq $0, %r14
 	jg skipProcess
@@ -82,11 +83,11 @@ brainfuck:
 	subq $1, %r14
 	jmp charLoop
 
-	shiftRight: 
+	shiftRight:
 	subq $8, %rbp
 	jmp charLoop
 
-	shiftLeft: 
+	shiftLeft:
 	addq $8, %rbp
 	jmp charLoop
 
@@ -124,14 +125,12 @@ brainfuck:
 
 	printCell:
 
-	pushq %rsi
-	
-	movq (%rbp), %rsi
-	movq $0, %rax
-	movq $format_str, %rdi
-	call printf
+	push %rsi
 
-	popq %rsi
+	movq (%rbp), %rdi
+	call putchar
+
+	pop %rsi
 
 	jmp charLoop
 
@@ -143,11 +142,12 @@ brainfuck:
 
 	movq $10000, %rax
 	emptyStack:
-	cmpq $0, %rax
-	je terminate
-	pop %rbx
-	subq $1, %rax
-	jmp emptyStack
+	movq %r13, %rsp
+	// cmpq $0, %rax
+	// je terminate
+	// pop %rbx
+	// subq $1, %rax
+	// jmp emptyStack
 
 
 	terminate:

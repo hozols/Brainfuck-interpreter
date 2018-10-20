@@ -1,5 +1,11 @@
-.global brainfuck
+// Assignment 4b
+// Team member 1: Herman Ozols - 4929179
+// Team member 2: Radoslav Stefanov - 4914244
+// Copyright 2018 TU DELFT Computer Organization Course
+// All rights reserved :)
 
+.global brainfuck
+//Fromat for putchar
 format_str: .asciz "%c"
 msg1: .asciz "\nFinished \n"
 # Your brainfuck subroutine will receive one argument:
@@ -36,41 +42,41 @@ brainfuck:
 	cmpq $0, %rax
 	je finish
 
-	// Shift one cell to the right
+	//Shift one cell to the right
 	cmpq $62, %rax
 	je shiftRight
 
-	// Shift one cell to the left
+	//Shift one cell to the left
 	cmpq $60, %rax
 	je shiftLeft
 
-	// Substract one from the current cell
+	//Substract one from the current cell
 	cmpq $45, %rax
 	je substractOne
 
-	// Add one from the current cell
+	//Add one from the current cell
 	cmpq $43, %rax
 	je addOne
 
-	// Print current cell
+	//Print current cell
 	cmpq $46, %rax
 	je printCell
 
-	// Opening lopp char
+	//Opening lopp char
 	cmpq $91, %rax
 	je startLoop
 
-	// Opening lopp char
+	//Opening lopp char
 	cmpq $93, %rax
 	je endLoop
 
 	skipProcess:
 
-	// Opening lopp char
+	//Opening lopp char
 	cmpq $91, %rax
 	je startLoopSkip
 
-	// Opening lopp char
+	//Opening lopp char
 	cmpq $93, %rax
 	je endLoopSkip
 
@@ -78,7 +84,7 @@ brainfuck:
 	//Jumps back to read next byte
 	jmp charLoop
 
-	//
+
 	startLoopSkip:
 	addq $1, %r14
 	jmp charLoop
@@ -87,10 +93,12 @@ brainfuck:
 	subq $1, %r14
 	jmp charLoop
 
+	//Loop shifts cell to right
 	shiftRight:
 	subq $8, %rbp
 	jmp charLoop
 
+	//Loop shifts cell to left
 	shiftLeft:
 	addq $8, %rbp
 	jmp charLoop

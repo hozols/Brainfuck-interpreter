@@ -21,7 +21,7 @@ brainfuck:
 	movq %rdi, %rsi
 	//Substract from base pointer so the base pointer is in the middle of th estack and so cels can go to left
 	subq $40000, %rbp
-	movq $0, %r14
+	movb $0, %ah
 
 	movq $10000, %rax
 	fillStack:
@@ -33,51 +33,50 @@ brainfuck:
 	//Reads the brainfuck input file char by char and acts acordingly
 	charLoop:
 	//Loads the next byte in %rax
-	lodsb
+	lodsb 
 
-	cmpq $0, %r14
+	cmpb $0, %ah
 	jg skipProcess
 
-	//Check if next byte is empty
-	cmpq $0, %rax
+	cmpb $0, %al
 	je finish
 
-	//Shift one cell to the right
-	cmpq $62, %rax
+	// Shift one place to the right
+	cmpb $62, %al
 	je shiftRight
 
-	//Shift one cell to the left
-	cmpq $60, %rax
+	// Shift one place to the left
+	cmpb $60, %al
 	je shiftLeft
 
-	//Substract one from the current cell
-	cmpq $45, %rax
+	// Substract one from the current cell
+	cmpb $45, %al
 	je substractOne
 
-	//Add one from the current cell
-	cmpq $43, %rax
+	// Add one from the current cell
+	cmpb $43, %al
 	je addOne
 
-	//Print current cell
-	cmpq $46, %rax
+	// Print current cell
+	cmpb $46, %al
 	je printCell
 
-	//Opening lopp char
-	cmpq $91, %rax
+	// Opening lopp char
+	cmpb $91, %al
 	je startLoop
 
-	//Opening lopp char
-	cmpq $93, %rax
+	// Opening lopp char
+	cmpb $93, %al
 	je endLoop
 
 	skipProcess:
 
-	//Opening lopp char
-	cmpq $91, %rax
+	// Opening lopp char
+	cmpb $91, %al
 	je startLoopSkip
 
-	//Opening lopp char
-	cmpq $93, %rax
+	// Opening lopp char
+	cmpb $93, %al
 	je endLoopSkip
 
 
@@ -86,11 +85,11 @@ brainfuck:
 
 
 	startLoopSkip:
-	addq $1, %r14
+	addb $1, %ah
 	jmp charLoop
 
 	endLoopSkip:
-	subq $1, %r14
+	subb $1, %ah
 	jmp charLoop
 
 	//Loop shifts cell to right
@@ -122,7 +121,7 @@ brainfuck:
 	jmp charLoop
 
 	skipLoop:
-	movq $1, %r14
+	movb $1, %ah
 	jmp charLoop
 	endLoop:
 

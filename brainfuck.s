@@ -6,12 +6,14 @@ msg1: .asciz "\nFinished \n"
 # a zero termianted string containing the code to execute.
 
 brainfuck:
-
+	//Intizializing the stack
 	push %rbp
 	movq %rsp, %rbp
+	//Move base pointer to r13 for later use
 	movq %rbp, %r13
 
 	movq %rdi, %rsi
+	//Substract from base pointer so the base pointer is in the middle of th estack and so cels can go to left
 	subq $40000, %rbp
 	movq $0, %r14
 
@@ -22,22 +24,23 @@ brainfuck:
 	push $0
 	subq $1, %rax
 	jmp fillStack
-
+	//Reads the brainfuck input file char by char and acts acordingly
 	charLoop:
-
+	//Loads the next byte in %rax
 	lodsb
 
 	cmpq $0, %r14
 	jg skipProcess
 
+	//Check if next byte is empty
 	cmpq $0, %rax
 	je finish
 
-	// Shift one place to the right
+	// Shift one cell to the right
 	cmpq $62, %rax
 	je shiftRight
 
-	// Shift one place to the left
+	// Shift one cell to the left
 	cmpq $60, %rax
 	je shiftLeft
 
@@ -72,9 +75,10 @@ brainfuck:
 	je endLoopSkip
 
 
-
+	//Jumps back to read next byte
 	jmp charLoop
 
+	//
 	startLoopSkip:
 	addq $1, %r14
 	jmp charLoop
@@ -91,24 +95,27 @@ brainfuck:
 	addq $8, %rbp
 	jmp charLoop
 
+	//Adds one to current cell
 	addOne:
 	addq $1, (%rbp)
 	jmp charLoop
 
+	//Substracts one from current cell
 	substractOne:
 	subq $1, (%rbp)
 	jmp charLoop
 
+	//Starts the loop
 	startLoop:
 	cmp $0, (%rbp)
 	je skipLoop
 	push %rsi
 	push %rbp
 	jmp charLoop
+
 	skipLoop:
 	movq $1, %r14
 	jmp charLoop
-
 	endLoop:
 
 	cmp $0, (%rbp)
@@ -123,6 +130,7 @@ brainfuck:
 	subq $1, %rsi
 	jmp charLoop
 
+	//Prints the cell and jumps back to charLoop
 	printCell:
 
 	push %rsi
@@ -134,8 +142,8 @@ brainfuck:
 
 	jmp charLoop
 
+	//Zeroes rax and prints "Finished"
 	finish:
-
 	movq $0, %rax
 	movq $msg1, %rdi
 	call printf
@@ -149,7 +157,7 @@ brainfuck:
 	// subq $1, %rax
 	// jmp emptyStack
 
-
+	//Clears the stack
 	terminate:
 	//movq %rbp, %rsp
 	popq %rbp

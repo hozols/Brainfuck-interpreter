@@ -1,4 +1,4 @@
-// Assignment 4b
+// Assignment 6
 // Team member 1: Herman Ozols - 4929179
 // Team member 2: Radoslav Stefanov - 4914244
 // Copyright 2018 TU DELFT Computer Organization Course

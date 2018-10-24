@@ -44,7 +44,7 @@ brainfuck:
 	subq $400, %rbp
 
 	// add 10 000 elements in the stack to use them as data storage for brainfuck array
-	movq $10000, %rax
+	movq $3000, %rax
 	fillStack:
 	cmpq $0, %rax
 	je charLoop

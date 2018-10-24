@@ -31,7 +31,7 @@ brainfuck:
 	movq %rdi, %rsi
 
 	// Set r14 to - this register will be used for tracking unexecuted while loops
-	movq $0, %r14
+	//movq $0, %r14
 
 	movq $0, %r12
 
@@ -43,7 +43,7 @@ brainfuck:
 	fillStack:
 	cmpq $0, %rax
 	je charLoop
-	pushw $0
+	push $0
 	subq $1, %rax
 	jmp fillStack
 
@@ -54,15 +54,15 @@ brainfuck:
 	lodsb
 
 	// Skips code execution if currently we are "skipping operations" due to unexecuted array
-	cmpq $0, %r14
+	cmp $0, %ah
 	jg skipProcess
 
 	// Substract one from the current cell
-	cmpq $45, %rax
+	cmp $45, %al
 	je substractOne
 
 	// Add one from the current cell
-	cmpq $43, %rax
+	cmp $43, %al
 	je addOne
 
 	cmpq $0, %r12
@@ -75,31 +75,31 @@ brainfuck:
 	continueCharLoop:
 
 	// Shift one cell to the right
-	cmpq $62, %rax
+	cmp $62, %al
 	je shiftRight
 
 	// Shift one cell to the left
-	cmpq $60, %rax
+	cmp $60, %al
 	je shiftLeft
 
 	// Print current cell
-	cmpq $46, %rax
+	cmp $46, %al
 	je printCell
 
 	// Opening lopp char
-	cmpq $91, %rax
+	cmp $91, %al
 	je startLoop
 
 	// Closing lopp char
-	cmpq $93, %rax
+	cmp $93, %al
 	je endLoop
 
 	// Getchar
-	cmpq $44, %rax
+	cmp $44, %al
 	je readUserInput
 
 	// Finishes code execution if ascii code is 0 (end of string)
-	cmpq $0, %rax
+	cmp $0, %al
 	je finish
 
 
@@ -107,11 +107,11 @@ brainfuck:
 	skipProcess:
 
 	//Opening lopp char
-	cmpq $91, %rax
+	cmp $91, %al
 	je startLoopSkip
 
 	//Closing lopp char
-	cmpq $93, %rax
+	cmp $93, %al
 	je endLoopSkip
 
 
@@ -120,12 +120,12 @@ brainfuck:
 
 	// Add 1 to r14 to keep track of opening tags
 	startLoopSkip:
-	addq $1, %r14
+	add $1, %ah
 	jmp charLoop
 
 	// Substract 1 from r14, if r14 is 0 normal execution will continue
 	endLoopSkip:
-	subq $1, %r14
+	sub $1, %ah
 	jmp charLoop
 
 	// Loop shifts cell to right (substract 8 to rbp)
@@ -153,7 +153,7 @@ brainfuck:
 	// Check if current data cell is 0, if so, skip while loop execution
 	cmp $0, (%rbp)
 	je skipLoop
-	// Push rsi to know at which point of the code to return when closing while tag is reached
+	
 	cmpb $45, (%rsi)
 	jne continueStartLoop
 
@@ -170,6 +170,7 @@ brainfuck:
 
 	continueStartLoop:
 
+	// Push rsi to know at which point of the code to return when closing while tag is reached
 	push %rsi
 	jmp charLoop
 
@@ -179,7 +180,7 @@ brainfuck:
 
 	skipLoop:
 	// Set r14 to 1 - this will stop execution of next commands until according closing tag is reached (r14 is 0)
-	movq $1, %r14
+	mov $1, %ah
 	jmp charLoop
 
 	// Ends loop
@@ -214,8 +215,12 @@ brainfuck:
 
 	push %rsi
 
+	push %rax
+
 	call getchar
 	movq %rax, (%rbp)
+
+	pop %rax
 
 	pop %rsi
 

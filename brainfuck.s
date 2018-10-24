@@ -33,7 +33,7 @@ brainfuck:
 	// Set r14 to - this register will be used for tracking unexecuted while loops
 	//movq $0, %r14
 
-	mov $0, %bl
+	movq $0, %r12
 
 	//Substract from base pointer so the base pointer is in the middle of th estack and so cels can go to left
 	subq $400, %rbp
@@ -65,12 +65,12 @@ brainfuck:
 	cmp $43, %al
 	je addOne
 
-	cmp $0, %bl
+	cmpq $0, %r12
 
 	je continueCharLoop
 
-	add %bl, (%rbp)
-	mov $0, %bl
+	addq %r12, (%rbp)
+	movq $0, %r12
 
 	continueCharLoop:
 
@@ -140,12 +140,12 @@ brainfuck:
 
 	//Adds one to current cell
 	addOne:
-	add $1, %bl
+	addq $1, %r12
 	jmp charLoop
 
 	//Substracts one from current cell
 	substractOne:
-	sub $1, %bl
+	subq $1, %r12
 	jmp charLoop
 
 	//Starts the loop
@@ -237,7 +237,7 @@ brainfuck:
 	movq %r13, %rsp
 	// cmpq $0, %rax
 	// je terminate
-	// pop %bl
+	// pop %rbx
 	// subq $1, %rax
 	// jmp emptyStack
 

@@ -33,6 +33,8 @@ brainfuck:
 	// Set r14 to - this register will be used for tracking unexecuted while loops
 	movq $0, %r14
 
+	movq $0, %r12
+
 	//Substract from base pointer so the base pointer is in the middle of th estack and so cels can go to left
 	subq $400, %rbp
 
@@ -55,9 +57,22 @@ brainfuck:
 	cmpq $0, %r14
 	jg skipProcess
 
-	// Finishes code execution if ascii code is 0 (end of string)
-	cmpq $0, %rax
-	je finish
+	// Substract one from the current cell
+	cmpq $45, %rax
+	je substractOne
+
+	// Add one from the current cell
+	cmpq $43, %rax
+	je addOne
+
+	cmpq $0, %r12
+
+	je continueCharLoop
+
+	addq %r12, (%rbp)
+	movq $0, %r12
+
+	continueCharLoop:
 
 	// Shift one cell to the right
 	cmpq $62, %rax
@@ -66,14 +81,6 @@ brainfuck:
 	// Shift one cell to the left
 	cmpq $60, %rax
 	je shiftLeft
-
-	// Substract one from the current cell
-	cmpq $45, %rax
-	je substractOne
-
-	// Add one from the current cell
-	cmpq $43, %rax
-	je addOne
 
 	// Print current cell
 	cmpq $46, %rax
@@ -90,6 +97,11 @@ brainfuck:
 	// Getchar
 	cmpq $44, %rax
 	je readUserInput
+
+	// Finishes code execution if ascii code is 0 (end of string)
+	cmpq $0, %rax
+	je finish
+
 
 	// Listen for opening array tags and closing tags when skipping execution commands
 	skipProcess:
@@ -128,12 +140,12 @@ brainfuck:
 
 	//Adds one to current cell
 	addOne:
-	addq $1, (%rbp)
+	addq $1, %r12
 	jmp charLoop
 
 	//Substracts one from current cell
 	substractOne:
-	subq $1, (%rbp)
+	subq $1, %r12
 	jmp charLoop
 
 	//Starts the loop

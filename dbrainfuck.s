@@ -4,7 +4,7 @@ format_str: .asciz "%c"
 error: .asciz "Unrecognized character found"
 format_decimal: .asciz "%d \n"
 msg1: .asciz "\nFinished \n"
-code: .asciz ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.>>>++++++++[<++++>-]<.>>>++++++++++[<+++++++++>-]<---.<<<<.+++.------.--------.>>+."
+code: .asciz "+++++++[-]."
 # Your brainfuck subroutine will receive one argument:
 # a zero termianted string containing the code to execute.
 code2: .asciz "++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>++.>+.+++++++..+++.<<++.>+++++++++++++++.>.+++.------.--------.<<+.<."
@@ -19,7 +19,8 @@ main:
 
 brainfuck:
 
-	movq $code2, %rdi
+	movq $code, %rdi
+	
 	//Intizializing the stack
 	push %rbp
 
@@ -27,15 +28,11 @@ brainfuck:
 	push %r15
 	push %r14
 	push %r13
-	
+
 	movq %rsp, %rbp
 
 	//Move base pointer to r13 for emptying the stack later
 	movq %rbp, %r13
-
-	
-
-	
 
 	// Pass the brainfuck string to rsi for loadsb to read it
 	movq %rdi, %rsi
@@ -44,14 +41,14 @@ brainfuck:
 	movq $0, %r14
 
 	//Substract from base pointer so the base pointer is in the middle of th estack and so cels can go to left
-	subq $40000, %rbp
+	subq $400, %rbp
 
 	// add 10 000 elements in the stack to use them as data storage for brainfuck array
 	movq $10000, %rax
 	fillStack:
 	cmpq $0, %rax
 	je charLoop
-	push $0
+	pushw $0
 	subq $1, %rax
 	jmp fillStack
 
@@ -97,6 +94,10 @@ brainfuck:
 	cmpq $93, %rax
 	je endLoop
 
+	// Getchar
+	cmpq $44, %rax
+	je readUserInput
+
 	// Listen for opening array tags and closing tags when skipping execution commands
 	skipProcess:
 
@@ -104,7 +105,7 @@ brainfuck:
 	cmpq $91, %rax
 	je startLoopSkip
 
-	//Opening lopp char
+	//Closing lopp char
 	cmpq $93, %rax
 	je endLoopSkip
 
@@ -124,12 +125,12 @@ brainfuck:
 
 	// Loop shifts cell to right (substract 8 to rbp)
 	shiftRight:
-	subq $8, %rbp
+	subq $4, %rbp
 	jmp charLoop
 
 	// Loop shifts cell to left (addd 8 to rbp)
 	shiftLeft:
-	addq $8, %rbp
+	addq $4, %rbp
 	jmp charLoop
 
 	//Adds one to current cell
@@ -147,7 +148,21 @@ brainfuck:
 	// Check if current data cell is 0, if so, skip while loop execution
 	cmp $0, (%rbp)
 	je skipLoop
+
 	// Push rsi to know at which point of the code to return when closing while tag is reached
+	cmpb $45, (%rsi)
+	jne continueStartLoop
+
+	cmpb $93, 1(%rsi)
+	jne continueStartLoop
+
+	movq $0, (%rbp)
+	addq $2, %rsi
+
+	jmp charLoop
+
+
+	continueStartLoop:
 	push %rsi
 	jmp charLoop
 
@@ -183,6 +198,18 @@ brainfuck:
 	pop %rsi
 
 	jmp charLoop
+
+	readUserInput:
+
+	push %rsi
+
+	call getchar
+	movq %rax, (%rbp)
+
+	pop %rsi
+
+	jmp charLoop
+
 
 	//Zeroes rax and prints "Finished"
 	finish:

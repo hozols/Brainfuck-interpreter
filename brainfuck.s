@@ -57,13 +57,13 @@ brainfuck:
 	cmp $0, %ah
 	jg skipProcess
 
-	// Substract one from the current cell
-	cmp $45, %al
-	je substractOne
-
 	// Add one from the current cell
 	cmp $43, %al
 	je addOne
+
+	// Substract one from the current cell
+	cmp $45, %al
+	je substractOne
 
 	cmpq $0, %r12
 
@@ -131,12 +131,31 @@ brainfuck:
 	// Loop shifts cell to right (substract 8 to rbp)
 	shiftRight:
 	subq $4, %rbp
+
+	shiftRightLoop:
+	lodsb
+
+	cmpq $62, %rax
+	je shiftRight
+
+	subq $1, %rsi
+
 	jmp charLoop
 
 	// Loop shifts cell to left (addd 8 to rbp)
 	shiftLeft:
 	addq $4, %rbp
+
+	// shiftLeftLoop:
+	// lodsb
+
+	// cmpq $60, %rax
+	// je shiftLeft
+
+	// subq $1, %rsi
+
 	jmp charLoop
+
 
 	//Adds one to current cell
 	addOne:
